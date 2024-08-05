@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+message CpuFeature {
+  string arch = 1;
+  string brand = 2;
+  string family = 3;
+  string model = 4;
+  string stepping = 5;
+  string uarch = 6;
+  string implementer = 7;
+  string architecture = 8;
+  string variant = 9;
+  string part = 10;
+  string revision = 11;
+  string platform = 12;
+  string machine = 13;
+  string cpu = 14;
+  string instruction = 15;
+  string microarchitecture = 16;
+  string processors = 17;
+  string vendor = 18;
+  repeated string flags = 19;
+  map<string, string> caches = 20;
+}
+
+message NodeInfo {
+  // 唯一的数据id
+  uint64 objectId = 1;
+  // 主机名字
+  string hostName = 2;
+  // CPU核心功能
+  CpuFeature cpu_feature = 3;
+}
+
+message NodeUsage {
+  // 唯一的数据id
+  uint64 objectId = 1;
+  // cpu使用率
+  uint64 cpuValue = 2;
+  // memory使用率
+  uint64 memoryValue = 3;
+}
+
+message NodeRes {
+  int32 id = 1;
+
+}
+
+
+service NodeCollectorService {
+  // 注册node信息
+  rpc reg(NodeInfo) returns (NodeRes) {}
+  // 更新node信息
+  rpc update(NodeUsage) returns (NodeRes) {}
+
+}
