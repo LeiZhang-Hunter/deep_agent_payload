@@ -27,14 +27,15 @@ message CpuFeature {
 }
 
 message NodeInfo {
+  string companyUuid = 1;
   // 唯一的数据id
-  uint64 objectId = 1;
+  uint64 objectId = 2;
   // 主机名字
-  string hostName = 2;
+  string hostName = 3;
   // CPU核心功能
-  CpuFeature cpu_feature = 3;
+  CpuFeature cpu_feature = 4;
   // linux内核操作系统
-  string systemOs = 4;
+  string systemOs = 5;
 }
 
 message NodeUsage {
