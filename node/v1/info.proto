@@ -1,5 +1,5 @@
 syntax = "proto3";
-
+package deepagent.node.v1;
 option go_package = "deep_observe/node_collector;v1";
 
 // CPU 特性
