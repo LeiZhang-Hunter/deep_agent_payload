@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package agent;
+
+option go_package = "deep-observe/api/grpc/agent/v1";
+
+import "pbentity/do_agent.proto";
+import "google/protobuf/timestamp.proto";
+
+service AgentControllerService {
+    // 注册 agent
+    rpc AgentRegister(AgentRegisterReq) returns (AgentRegisterRes) {}
+    // 注销 agent
+    rpc AgentUnregister(AgentUnregisterReq) returns (AgentUnregisterRes) {}
+    // agent 连接控制服务器
+    rpc AgentHeartbeat(stream AgentHeartbeatReq) returns (stream AgentHeartbeatRes) {}
+    // 获取配置
+    rpc AgentGetConfig(AgentGetConfigReq) returns (AgentGetConfigRes) {}
+    // 更新配置
+    rpc AgentUpdateConfig(AgentUpdateConfigReq) returns (AgentUpdateConfigRes) {}
+    // 操作agent的子进程
+    rpc AgentOperateProcess(AgentOperateProcessReq) returns (AgentOperateProcessRes) {}
+}
+
+message AgentRegisterReq {
+    string Name = 1;
+    string Version = 2;
+    string CompanyUuid = 3;
+}
+message AgentRegisterRes {
+    string Uuid = 1;
+    string ConfigVersion = 2;
+}
+
+message AgentUnregisterReq {
+    string Uuid = 1;
+
+}
+message AgentUnregisterRes {
+
+}
+
+message AgentProcessInfo {
+    repeated ProcessInfo ProcessList = 5;  // 进程列表
+}
+
+message ProcessInfo {
+    int64 ObjectId = 1;                         // 进程唯一标识
+    ProcessState State = 2;                     // 进程状态
+    ProcessType ProcessType = 3;                // 进程类型
+    int32 Version = 4;                          // 进程版本号
+    google.protobuf.Timestamp StartTime = 5;    // 启动时间
+}
+
+message AgentHeartbeatReq {
+    string Uuid = 1;                            // agent 的id
+    string Name = 2;                            // agent 的名字
+    string Version = 3;                         // agent 的版本
+    string ConfigVersion = 4;                   // agent 的配置版本
+    AgentProcessInfo AgentProcessInfo = 5;      // 进程列表
+}
+message AgentHeartbeatRes {
+    // 操作进程
+    AgentCmd Cmd = 1;
+    repeated int64 ProcessObjectIdList = 2;
+    // 更新配置
+    string ConfigVersion = 3;
+}
+
+message AgentGetConfigReq {
+    string Uuid = 1;
+}
+message AgentGetConfigRes {
+    string Content = 1;
+}
+
+message AgentUpdateConfigReq {
+    repeated string UuidList = 1;
+    string ConfigVersion = 2;
+}
+
+message AgentUpdateConfigRes {
+    repeated string FailedUuidList = 1;
+}
+
+message ProcessOperateInfo {
+    string AgentUuid = 1;
+    repeated int64 ProcessObjectIdList = 2;
+}
+
+message AgentOperateProcessReq {
+    AgentCmd cmd = 1;
+    repeated ProcessOperateInfo OperateInfoList = 2;
+}
+
+message AgentOperateProcessRes {
+    repeated string FailedAgentList = 1;
+}
+
+enum AgentCmd {
+    None = 0;
+    Start = 1;
+    Stop = 2;
+}
+
+enum ProcessState {
+    Stopped = 0;
+    Running = 1;
+}
+
+enum ProcessType {
+    Unknown = 0;
+}

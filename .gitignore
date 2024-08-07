@@ -12,7 +12,7 @@ gf
 main
 main.exe
 output/
-manifest/output/
+agent/output/
 temp/
 temp.yaml
 bin
