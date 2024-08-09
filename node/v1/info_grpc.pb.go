@@ -4,7 +4,7 @@
 // - protoc             v4.25.1
 // source: node/v1/info.proto
 
-package v1
+package deepagent_node_v1
 
 import (
 	context "context"
@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	NodeCollectorService_Reg_FullMethodName    = "/NodeCollectorService/reg"
-	NodeCollectorService_Update_FullMethodName = "/NodeCollectorService/update"
+	NodeCollectorService_Reg_FullMethodName    = "/deepagent.node.v1.NodeCollectorService/reg"
+	NodeCollectorService_Update_FullMethodName = "/deepagent.node.v1.NodeCollectorService/update"
 )
 
 // NodeCollectorServiceClient is the client API for NodeCollectorService service.
@@ -133,7 +133,7 @@ func _NodeCollectorService_Update_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var NodeCollectorService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "NodeCollectorService",
+	ServiceName: "deepagent.node.v1.NodeCollectorService",
 	HandlerType: (*NodeCollectorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
