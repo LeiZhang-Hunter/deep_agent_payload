@@ -12,29 +12,39 @@ service AgentControllerService {
     rpc AgentRegister(AgentRegisterReq) returns (AgentRegisterRes) {}
     // 注销 agent
     rpc AgentUnregister(AgentUnregisterReq) returns (AgentUnregisterRes) {}
-    // agent 连接控制服务器
-    rpc AgentHeartbeat(stream AgentHeartbeatReq) returns (stream AgentHeartbeatRes) {}
+    // agent 心跳
+    rpc AgentHeartbeat(AgentHeartbeatReq) returns (AgentHeartbeatRes) {}
+    // 操作agent stream长连接
+    rpc AgentOperate(AgentOperateReq) returns (stream AgentOperateRes) {}
     // 获取配置
     rpc AgentGetConfig(AgentGetConfigReq) returns (AgentGetConfigRes) {}
-    // 更新配置
-    rpc AgentUpdateConfig(AgentUpdateConfigReq) returns (AgentUpdateConfigRes) {}
-    // 操作agent的子进程
+    // 操作agent的子进程 广播使用
     rpc AgentOperateProcess(AgentOperateProcessReq) returns (AgentOperateProcessRes) {}
 }
 
+message AgentOperateReq {
+    uint64 ObjectId = 1;
+}
+
+message AgentOperateRes {
+    int32 Code = 1;                         // 返回码
+    // 操作进程
+    AgentCmd Cmd = 2;
+    repeated int64 ProcessObjectIdList = 3;
+}
+
 message AgentRegisterReq {
-    string Name = 1;
-    string Version = 2;
-    string CompanyUuid = 3;
+    uint64 ObjectId = 1;
+    string Name = 2;
+    string Version = 3;
+    string CompanyUuid = 4;
 }
 message AgentRegisterRes {
-    string Uuid = 1;
-    string ConfigVersion = 2;
+    string ConfigUuid = 1;
 }
 
 message AgentUnregisterReq {
-    string Uuid = 1;
-
+    uint64 ObjectId = 1;
 }
 message AgentUnregisterRes {
 
@@ -45,46 +55,42 @@ message AgentProcessInfo {
 }
 
 message ProcessInfo {
-    int64 ObjectId = 1;                         // 进程唯一标识
+    uint64 ObjectId = 1;                         // 进程唯一标识
     ProcessState State = 2;                     // 进程状态
     ProcessType ProcessType = 3;                // 进程类型
-    int32 Version = 4;                          // 进程版本号
+    string Version = 4;                          // 进程版本号
     google.protobuf.Timestamp StartTime = 5;    // 启动时间
 }
 
 message AgentHeartbeatReq {
-    string Uuid = 1;                            // agent 的id
+    uint64 ObjectId = 1;                        // agent 的id
     string Name = 2;                            // agent 的名字
     string Version = 3;                         // agent 的版本
-    string ConfigVersion = 4;                   // agent 的配置版本
+    string ConfigUuid = 4;                      // agent 的配置版本
     AgentProcessInfo AgentProcessInfo = 5;      // 进程列表
 }
 message AgentHeartbeatRes {
-    // 操作进程
-    AgentCmd Cmd = 1;
-    repeated int64 ProcessObjectIdList = 2;
-    // 更新配置
-    string ConfigVersion = 3;
+    // 配置uuid
+    string ConfigUuid = 3;
 }
 
 message AgentGetConfigReq {
-    string Uuid = 1;
+    string ConfigUuid = 1;
 }
 message AgentGetConfigRes {
     string Content = 1;
 }
 
 message AgentUpdateConfigReq {
-    repeated string UuidList = 1;
-    string ConfigVersion = 2;
+    repeated uint64 ObjectIdList = 1;
+    string ConfigUuid = 2;
 }
 
 message AgentUpdateConfigRes {
-    repeated string FailedUuidList = 1;
 }
 
 message ProcessOperateInfo {
-    string AgentUuid = 1;
+    uint64 AgentObjectId = 1;
     repeated int64 ProcessObjectIdList = 2;
 }
 
@@ -94,7 +100,6 @@ message AgentOperateProcessReq {
 }
 
 message AgentOperateProcessRes {
-    repeated string FailedAgentList = 1;
 }
 
 enum AgentCmd {
