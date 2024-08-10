@@ -1,6 +1,11 @@
 syntax = "proto3";
 package deepagent.node.v1;
 option go_package = "deepagent.node.v1";
+
+message CpuFeatureCacheKeyValue {
+  map<string, string> values = 1;
+}
+
 // "unknown service deepagent.node.v1.NodeCollectorService"
 // CPU 特性
 message CpuFeature {
@@ -23,7 +28,7 @@ message CpuFeature {
   string processors = 17;
   string vendor = 18;
   repeated string flags = 19;
-  map<string, string> caches = 20;
+  repeated CpuFeatureCacheKeyValue caches = 20;
 }
 
 message NodeInfo {
