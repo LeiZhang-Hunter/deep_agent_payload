@@ -36,6 +36,14 @@ message NodeInfo {
   CpuFeature cpu_feature = 4;
   // linux内核操作系统
   string systemOs = 5;
+  // 内核版本
+  string systemVersion = 6;
+  // 主机类型是kvm还是虚拟机
+  string systemType = 7;
+  // 属于的集群
+  string cluster = 8;
+  // 所属平台
+  string platform = 9;
 }
 
 message NodeUsage {
