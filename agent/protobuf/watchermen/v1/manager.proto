@@ -20,9 +20,9 @@ message CGroupConfig {
 }
 
 message ProcessConfig {
-  // 进程名字
+  // 进程名字 (*)
   string process_name = 1;
-  // 启动命令
+  // 启动命令 (*)
   string command = 2;
   // 自动重启
   bool autostart = 3;
@@ -46,7 +46,7 @@ message ProcessConfig {
   CGroupConfig cgroup = 12;
   // 配置内容
   string config = 13;
-  // 配置路径
+  // 配置路径 (*)
   string config_path = 14;
   // 配置版本
   string config_version = 15;
@@ -79,7 +79,7 @@ message ReloadConfig {
 }
 
 message ManagerConfig {
-  // 服务器地址
+  // 服务器地址 (*)
   NetworkConfig network = 1;
   // 进程列表
   repeated ProcessConfig service = 2;
