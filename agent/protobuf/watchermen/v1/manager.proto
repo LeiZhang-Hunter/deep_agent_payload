@@ -71,4 +71,6 @@ message ManagerConfig {
   string cgroups_hierarchy = 5;
   HttpServerConfig httpServer = 6;
   ReloadConfig reload = 7;
+  string company_uuid = 8;
+  string version = 9;
 }
