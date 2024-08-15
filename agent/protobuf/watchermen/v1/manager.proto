@@ -39,6 +39,12 @@ message ProcessConfig {
   bool enabeld = 11;
   // CGroup
   CGroupConfig cgroup = 12;
+  // 配置内容
+  string config = 13;
+  // 配置路径
+  string config_path = 14;
+  // 配置版本
+  string config_version = 15;
 }
 
 message HttpHealthConfig {
