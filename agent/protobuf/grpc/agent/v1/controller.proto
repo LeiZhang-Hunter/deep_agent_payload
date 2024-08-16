@@ -37,7 +37,6 @@ message AgentRegisterReq {
     uint64 ObjectId = 1;
     string Name = 2;
     string Version = 3;
-    string CompanyUuid = 4;
 }
 message AgentRegisterRes {
     string ConfigUuid = 1;
@@ -60,6 +59,7 @@ message ProcessInfo {
     ProcessType ProcessType = 3;                // 进程类型
     string Version = 4;                          // 进程版本号
     google.protobuf.Timestamp StartTime = 5;    // 启动时间
+    string Name = 6;                            // 进程名字
 }
 
 message AgentHeartbeatReq {
