@@ -6,7 +6,6 @@ option go_package = "deep-observe/api/grpc/agent/v1";
 
 import "pbentity/do_agent.proto";
 import "google/protobuf/timestamp.proto";
-import "watchermen/v1/manager.proto";
 
 service AgentControllerService {
     // 注册 agent
@@ -28,8 +27,10 @@ message AgentOperateReq {
 }
 
 message AgentOperateRes {
-    repeated string StopProcessList = 1; // name of process
-    repeated ProcessConfig StartProcessList = 2;
+    int32 Code = 1;                         // 返回码
+    // 操作进程
+    AgentCmd Cmd = 2;
+    repeated string Names = 3;
 }
 
 message AgentRegisterReq {
@@ -55,13 +56,10 @@ message AgentProcessInfo {
 }
 
 message ProcessInfo {
-    uint64 ObjectId = 1;                        // 进程唯一标识
-    ProcessState State = 2;                     // 进程状态
-    ProcessType ProcessType = 3;                // 进程类型
-    string Version = 4;                         // 进程版本号
-    google.protobuf.Timestamp StartTime = 5;    // 启动时间
-    string Name = 6;                            // 进程名字
-    int32 Pid = 7;                              // 进程ID
+    string Name = 1;                                // 进程名字
+    ProcessState State = 2;                         // 进程状态
+    string Version = 3;                             // 进程版本号
+    google.protobuf.Timestamp StartTime = 4;        // 启动时间
 }
 
 message AgentHeartbeatReq {
@@ -93,7 +91,7 @@ message AgentUpdateConfigRes {
 
 message ProcessOperateInfo {
     uint64 AgentObjectId = 1;
-    repeated int64 ProcessObjectIdList = 2;
+    repeated string Names = 2;
 }
 
 message AgentOperateProcessReq {
@@ -113,8 +111,4 @@ enum AgentCmd {
 enum ProcessState {
     Stopped = 0;
     Running = 1;
-}
-
-enum ProcessType {
-    Unknown = 0;
 }
