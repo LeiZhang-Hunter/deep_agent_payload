@@ -37,6 +37,8 @@ message AgentRegisterReq {
     uint64 ObjectId = 1;
     string Name = 2;
     string Version = 3;
+    string ipv4 = 4; // 主机的内网IPv4地址
+    string ipv6 = 5; // 主机的内网IPv6地址
 }
 message AgentRegisterRes {
     string ConfigUuid = 1;
