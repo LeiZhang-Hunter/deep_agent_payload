@@ -92,11 +92,14 @@ message ManagerConfig {
   HttpServerConfig http_server = 6;
   // 重载配置
   ReloadConfig reload = 7;
+  // 公司uuid, 不支持运行时更新, 需要停止服务更新
   string company_uuid = 8;
-  // 版本
+  // 版本, 不支持运行时更新, 需要停止服务更新
   string version = 9;
-  // 日志保存路径, 有两个特殊值: 'stdout': 标准输出, 'syslog': 系统日志
+  // 日志保存路径, 有两个特殊值: 'stdout': 标准输出, 'syslog': 系统日志; 其他值必须是绝对路径;
   string log_path = 10;
-  // watchermen进入daemon模式
+  // watchermen进入daemon模式; 不支持运行时更新, 需要停止服务更新
   bool daemon = 11;
+  // 上报ip时优先考虑的网卡, 如果该网口不存在, 则使用随机值; 不支持运行时更新, 需要停止服务更新
+  string network_interface = 12;
 }
