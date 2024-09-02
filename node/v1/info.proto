@@ -31,6 +31,118 @@ message CpuFeature {
   repeated CpuFeatureCacheKeyValue caches = 20;
 }
 
+message EnvVariable {
+  string key = 1;
+  string value = 2;
+}
+
+// 虚拟内存信息
+message VirtualMemoryInfo {
+  // total virtual memory
+  uint64 total = 1;
+  // used virtual memory
+  uint64 used = 2;
+  // free virtual memory
+  uint64 free = 3;
+  // shared virtual memory
+  uint64 shared = 4;
+  // buffer virtual memory
+  uint64 buffer = 5;
+}
+
+// 进程内存使用情况
+message ProcessMemoryUsage {
+  // total program size
+  uint64 size = 1;
+  // resident set size
+  uint64 resident = 2;
+  // shared
+  uint64 shared = 3;
+  // text
+  uint64 text = 4;
+  // lib
+  uint64 lib = 5;
+  // data + stack
+  uint64 data = 6;
+  // dirty pages
+  uint64 dirty = 7;
+}
+
+// 进程信息
+message ProcessInfo {
+  // 进程id
+  uint64 pid = 1;
+  // 进程名字
+  string name = 2;
+  // 进程路径
+  string path = 3;
+  // cmdline
+  string cmdline = 4;
+  // 父进程id
+  uint64 ppid = 5;
+  uint64 tracer = 6;
+  // 进程状态
+  int32 state = 7;
+  // 环境变量
+  repeated EnvVariable env_variables = 8;
+  // 进程
+  repeated uint64 threads = 9;
+  // 启动时间
+  uint64 start_time = 10;
+  // cpu 使用率
+  uint64 cpu_usage = 11;
+  // 内存使用率
+  ProcessMemoryUsage memory_usage = 12;
+}
+
+// 容器
+message ContainerInfo {
+  // 容器id
+  string id = 1;
+  // 容器名字
+  string name = 2;
+  // 容器运行的镜像, 例如: ubuntu:latest
+  string image_tag = 3;
+  // 容器运行的镜像id
+  string image_id = 4;
+  // 容器运行的命令
+  string command = 5;
+  // 容器网络接受的字节数
+  uint64 rx_bytes = 6;
+  // 容器网络发送的字节数
+  uint64 tx_bytes = 7;
+  // 容器启动时间点
+  uint64 start_time = 8;
+  // 容器磁盘使用情况
+  uint64 space_usage = 9;
+}
+
+// 磁盘
+message DiskInfo {
+  // 磁盘名字
+  string name = 1;
+  // 磁盘类型
+  string type = 2;
+  // 磁盘大小
+  uint64 size = 3;
+  // 磁盘已使用大小
+  uint64 used = 4;
+  // 磁盘可用大小
+  uint64 free = 5;
+  // 磁盘使用率
+  uint64 usage = 6;
+  // 磁盘挂载点
+  string mount = 7;
+  // 磁盘文件系统
+  string fs = 8;
+  // 磁盘inode使用率
+  uint64 inode_usage = 9;
+  // 磁盘inode总数
+  uint64 inode_total = 10;
+  // 磁盘生产商
+  string vendor = 11;
+}
+
 message NodeInfo {
   string companyUuid = 1;
   // 唯一的数据id
@@ -49,6 +161,14 @@ message NodeInfo {
   string cluster = 8;
   // 所属平台
   string platform = 9;
+  // 进程信息
+  repeated ProcessInfo processInfos = 10;
+  // 容器信息
+  repeated ContainerInfo containerInfos = 11;
+  // 磁盘信息
+  repeated DiskInfo diskInfos = 12;
+  // 虚拟内存信息
+  VirtualMemoryInfo virtualMemoryInfo = 13;
 }
 
 message NodeUsage {
