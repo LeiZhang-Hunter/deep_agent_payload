@@ -93,6 +93,8 @@ message ProcessInfo {
   uint64 cpu_usage = 11;
   // 内存使用率
   ProcessMemoryUsage memory_usage = 12;
+  // 唯一的数据id
+  uint64 hostObjectId = 13;
 }
 
 // 容器
@@ -191,5 +193,6 @@ service NodeCollectorService {
   rpc reg(NodeInfo) returns (NodeRes) {}
   // 更新node信息
   rpc update(NodeUsage) returns (NodeRes) {}
-
+  // 更新进程信息
+  rpc reportProcess(ProcessInfo) returns (NodeRes) {}
 }
