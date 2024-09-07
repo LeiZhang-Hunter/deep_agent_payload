@@ -187,6 +187,10 @@ message NodeRes {
 
 }
 
+message ProcessInfoRequest {
+  repeated ProcessInfo processes = 1;
+}
+
 
 service NodeCollectorService {
   // 注册node信息
@@ -194,5 +198,5 @@ service NodeCollectorService {
   // 更新node信息
   rpc update(NodeUsage) returns (NodeRes) {}
   // 更新进程信息
-  rpc reportProcess(ProcessInfo) returns (NodeRes) {}
+  rpc reportProcess(ProcessInfoRequest) returns (NodeRes) {}
 }
