@@ -2,9 +2,7 @@ syntax = "proto3";
 package deepagent.node.v1;
 option go_package = "deepagent.node.v1";
 
-message CpuFeatureCacheKeyValue {
-  map<string, string> values = 1;
-}
+message CpuFeatureCacheKeyValue { map<string, string> values = 1; }
 
 // "unknown service deepagent.node.v1.NodeCollectorService"
 // CPU 特性
@@ -31,94 +29,124 @@ message CpuFeature {
   repeated CpuFeatureCacheKeyValue caches = 20;
 }
 
+// 环境变量键值对
 message EnvVariable {
   string key = 1;
   string value = 2;
 }
 
-// 虚拟内存信息
+// 机器虚拟内存信息
 message VirtualMemoryInfo {
-  // total virtual memory
+  // total virtual memory, /proc/meminfo/MemTotal
   uint64 total = 1;
-  // used virtual memory
-  uint64 used = 2;
-  // free virtual memory
-  uint64 free = 3;
-  // shared virtual memory
-  uint64 shared = 4;
-  // buffer virtual memory
-  uint64 buffer = 5;
+  // free virtual memory, the sum of LowFree+HighFree, /proc/meminfo/MemFree
+  uint64 free = 2;
+  // used virtual memory, /proc/meminfo/SwapCached
+  uint64 swap_cached = 3;
 }
 
 // 进程内存使用情况
+// read from /proc/[pid]/statm
 message ProcessMemoryUsage {
-  // total program size
+  // total program size, /proc/[pid]/statm/[1]
   uint64 size = 1;
-  // resident set size
+  // resident set size(rss), /proc/[pid]/statm/[2]
   uint64 resident = 2;
-  // shared
+  // shared, /proc/[pid]/statm/[3]
   uint64 shared = 3;
-  // text
+  // text, /proc/[pid]/statm/[4]
   uint64 text = 4;
-  // lib
+  // lib, /proc/[pid]/statm/[5]
   uint64 lib = 5;
-  // data + stack
+  // data + stack, /proc/[pid]/statm/[6]
   uint64 data = 6;
-  // dirty pages
+  // dirty pages, /proc/[pid]/statm/[7]
   uint64 dirty = 7;
-  // rss
-  uint64 rss = 8;
-  // rsspct
+  // todo: rsspct
   float rsspct = 9;
-  // swap
+  // todo: swap memory size
   int64 swap = 10;
-  // vms
+  // todo: vms
   int64 vms = 11;
+}
+
+// R is running,
+// S is sleeping,
+// D is sleeping in an uninterruptible wait,
+// Z is zombie,
+// T is traced or stopped
+enum ProcessState {
+  Unknown = 0;          // to satisfy proto3 requirement
+  Running = 82;         // ASCII 'R'
+  Sleeping = 83;        // ASCII 'S'
+  Uninterruptible = 68; // ASCII 'D'
+  Zombie = 90;          // ASCII 'Z'
+  Traced = 84;          // ASCII 'T'
 }
 
 // 进程信息
 message ProcessInfo {
-  // 进程id
-  uint64 pid = 1;
-  // 进程名字
-  string name = 2;
-  // 进程路径
-  string path = 3;
-  // cmdline
-  string cmdline = 4;
-  // 父进程id
-  uint64 ppid = 5;
-  string containerId = 6;
-  uint64 openFdCount = 7;
-  uint64 involuntaryCtxSwitches = 8;
-  uint64 voluntaryCtxSwitches = 9;
-  uint64 cpu_nice = 10;
-  uint64 cpu_numthreads = 11;
-  float cpu_systempct = 12;
-  uint64 cpu_systemtime = 13;
-  float cpu_totalpct = 14;
-  float cpu_userpct = 15;
-  uint64 cpu_usertime = 16;
-  float iostat_readbytesrate = 17;
-  float iostat_readrate = 18;
-  float iostat_writebytesrate = 19;
-  float iostat_writerate = 20;
-  uint64 tracer = 21;
-  // 进程状态
-  int32 state = 22;
-  string pstate = 23;
-  // 环境变量
-  repeated EnvVariable env_variables = 24;
-  // 进程
-  repeated uint64 threads = 25;
-  // 启动时间
-  uint64 start_time = 26;
-  // cpu 使用率
-  uint64 cpu_usage = 27;
-  // 内存使用率
-  ProcessMemoryUsage memory_usage = 28;
-  // 唯一的数据id
-  uint64 hostObjectId = 29;
+  // 关联机器id
+  uint64 host_object_id = 1;
+  // 进程id, /proc/[pid]
+  uint64 pid = 2;
+  // 进程名字, /proc/[pid]/status/Name
+  string name = 3;
+  // 进程路径, /proc/[pid]/exe
+  string path = 4;
+  // 启动命令, /proc/[pid]/cmdline
+  string cmdline = 5;
+  // 父进程id, /proc/[pid]/status/PPid
+  uint64 ppid = 6;
+  // 用户id, /proc/[pid]/status/Uid
+  int32 uid = 7;
+  // 用户名, 通过 getpwuid 获取
+  string user_name = 8;
+  // 组id, /proc/[pid]/status/Gid
+  int32 gid = 9;
+  // 进程状态, /proc/[pid]/status/State
+  ProcessState state = 10;
+  // 运行时长(单位为秒), (/proc/[pid]/stat/start_time[22]) / sysconf(_SC_CLK_TCK)
+  uint64 running_time = 11;
+  // todo: 所属容器id
+  string container_id = 12;
+  // 打开的文件描述符数量, /proc/[pid]/status/FDSize
+  uint64 open_fd_count = 13;
+  // 被动上下文切换次数, /proc/[pid]/status/nonvoluntary_ctxt_switches
+  uint64 involuntary_ctx_switches = 14;
+  // 主动上下文切换次数, /proc/[pid]/status/voluntary_ctxt_switches
+  uint64 voluntary_ctx_switches = 15;
+  // 优先级, /proc/[pid]/stat/[19]
+  uint64 cpu_nice = 16;
+  // 线程数量, /proc/[pid]/status/Threads
+  uint64 threads_num = 17;
+  // 环境变量, /proc/[pid]/environ
+  repeated EnvVariable env_variables = 18;
+  // 内存使用率, /proc/[pid]/statm
+  ProcessMemoryUsage memory_usage = 19;
+
+  // 读取字节数, /proc/[pid]/io/read_bytes
+  uint64 iostat_read_bytes = 20;
+  // 写入字节数, /proc/[pid]/io/write_bytes
+  uint64 iostat_write_bytes = 21;
+  // todo: 读取字节速率
+  float iostat_read_bytes_rate = 22;
+  // todo: 写入字节速率
+  float iostat_write_bytes_rate = 23;
+
+  // 用户态 cpu 使用时间, (/proc/[pid]/stat/utime[14]) / sysconf(_SC_CLK_TCK)
+  uint64 cpu_user_time = 24;
+  // 内核态 cpu 使用时间, (/proc/[pid]/stat/stime[15]) / sysconf(_SC_CLK_TCK)
+  uint64 cpu_system_time = 25;
+  // 用户态cpu 使用率, this.cpu_user_time / (/proc/uptime - this.running_time)
+  float cpu_user_pct = 26;
+  // Kernel CPU 使用率百分比, (this.cpu_system_time) / (/proc/uptime - this.running_time)
+  float cpu_system_pct = 27;
+  // CPU总体使用率: this.cpu_user_pct + this.cpu_system_pct
+  float cpu_total_pct = 28;
+
+  // todo: ???
+  string pstate = 29;
 }
 
 // 容器
@@ -143,7 +171,7 @@ message ContainerInfo {
   uint64 space_usage = 9;
 }
 
-// 磁盘
+// 磁盘信息, 不能单独借助/proc 完成
 message DiskInfo {
   // 磁盘名字
   string name = 1;
@@ -169,6 +197,7 @@ message DiskInfo {
   string vendor = 11;
 }
 
+// 机器信息
 message NodeInfo {
   string companyUuid = 1;
   // 唯一的数据id
@@ -206,15 +235,9 @@ message NodeUsage {
   uint64 memoryValue = 3;
 }
 
-message NodeRes {
-  int32 id = 1;
+message NodeRes { int32 id = 1; }
 
-}
-
-message ProcessInfoRequest {
-  repeated ProcessInfo processes = 1;
-}
-
+message ProcessInfoRequest { repeated ProcessInfo processes = 1; }
 
 service NodeCollectorService {
   // 注册node信息
