@@ -66,6 +66,14 @@ message ProcessMemoryUsage {
   uint64 data = 6;
   // dirty pages
   uint64 dirty = 7;
+  // rss
+  uint64 rss = 8;
+  // rsspct
+  float rsspct = 9;
+  // swap
+  int64 swap = 10;
+  // vms
+  int64 vms = 11;
 }
 
 // 进程信息
@@ -80,21 +88,37 @@ message ProcessInfo {
   string cmdline = 4;
   // 父进程id
   uint64 ppid = 5;
-  uint64 tracer = 6;
+  string containerId = 6;
+  uint64 openFdCount = 7;
+  uint64 involuntaryCtxSwitches = 8;
+  uint64 voluntaryCtxSwitches = 9;
+  uint64 cpu_nice = 10;
+  uint64 cpu_numthreads = 11;
+  float cpu_systempct = 12;
+  uint64 cpu_systemtime = 13;
+  float cpu_totalpct = 14;
+  float cpu_userpct = 15;
+  uint64 cpu_usertime = 16;
+  float iostat_readbytesrate = 17;
+  float iostat_readrate = 18;
+  float iostat_writebytesrate = 19;
+  float iostat_writerate = 20;
+  uint64 tracer = 21;
   // 进程状态
-  int32 state = 7;
+  int32 state = 22;
+  string pstate = 23;
   // 环境变量
-  repeated EnvVariable env_variables = 8;
+  repeated EnvVariable env_variables = 24;
   // 进程
-  repeated uint64 threads = 9;
+  repeated uint64 threads = 25;
   // 启动时间
-  uint64 start_time = 10;
+  uint64 start_time = 26;
   // cpu 使用率
-  uint64 cpu_usage = 11;
+  uint64 cpu_usage = 27;
   // 内存使用率
-  ProcessMemoryUsage memory_usage = 12;
+  ProcessMemoryUsage memory_usage = 28;
   // 唯一的数据id
-  uint64 hostObjectId = 13;
+  uint64 hostObjectId = 29;
 }
 
 // 容器
