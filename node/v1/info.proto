@@ -199,40 +199,36 @@ message DiskInfo {
 
 // 机器信息
 message NodeInfo {
-  string companyUuid = 1;
+  string company_uuid = 1;
   // 唯一的数据id
-  uint64 objectId = 2;
+  uint64 host_object_id = 2;
   // 主机名字
-  string hostName = 3;
+  string host_name = 3;
   // CPU核心功能
   CpuFeature cpu_feature = 4;
   // linux内核操作系统
-  string systemOs = 5;
+  string system_os = 5;
   // 内核版本
-  string systemVersion = 6;
+  string system_version = 6;
   // 主机类型是kvm还是虚拟机
-  string systemType = 7;
+  string system_type = 7;
   // 属于的集群
   string cluster = 8;
   // 所属平台
   string platform = 9;
-  // 进程信息
-  repeated ProcessInfo processInfos = 10;
-  // 容器信息
-  repeated ContainerInfo containerInfos = 11;
   // 磁盘信息
-  repeated DiskInfo diskInfos = 12;
+  repeated DiskInfo disk_infos = 12;
   // 虚拟内存信息
-  VirtualMemoryInfo virtualMemoryInfo = 13;
+  VirtualMemoryInfo virtual_memory_info = 13;
 }
 
 message NodeUsage {
   // 唯一的数据id
-  uint64 objectId = 1;
+  uint64 host_object_id = 1;
   // cpu使用率
-  uint64 cpuValue = 2;
+  uint64 cpu_value = 2;
   // memory使用率
-  uint64 memoryValue = 3;
+  uint64 memory_value = 3;
 }
 
 message NodeRes { int32 id = 1; }
@@ -241,9 +237,9 @@ message ProcessInfoRequest { repeated ProcessInfo processes = 1; }
 
 service NodeCollectorService {
   // 注册node信息
-  rpc reg(NodeInfo) returns (NodeRes) {}
+  rpc Register(NodeInfo) returns (NodeRes) {}
   // 更新node信息
-  rpc update(NodeUsage) returns (NodeRes) {}
+  rpc Update(NodeUsage) returns (NodeRes) {}
   // 更新进程信息
-  rpc reportProcess(ProcessInfoRequest) returns (NodeRes) {}
+  rpc ReportProcess(ProcessInfoRequest) returns (NodeRes) {}
 }
