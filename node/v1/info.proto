@@ -4,7 +4,6 @@ option go_package = "deepagent.node.v1";
 
 message CpuFeatureCacheKeyValue { map<string, string> values = 1; }
 
-// "unknown service deepagent.node.v1.NodeCollectorService"
 // CPU 特性
 message CpuFeature {
   string arch = 1;
@@ -28,6 +27,21 @@ message CpuFeature {
   repeated string flags = 19;
   repeated CpuFeatureCacheKeyValue caches = 20;
 }
+
+message LoadAverage {
+  // 1分钟内的平均负载
+  float one = 1;
+  // 5分钟内的平均负载
+  float five = 2;
+  // 15分钟内的平均负载
+  float fifteen = 3;
+  // running processes
+  int32 running = 4;
+  // total processes
+  int32 total = 5;
+}
+
+message CPUUsage { LoadAverage load = 1; }
 
 // 环境变量键值对
 message EnvVariable {
@@ -64,10 +78,8 @@ message ProcessMemoryUsage {
   uint64 dirty = 7;
   // todo: rsspct
   float rsspct = 9;
-  // todo: swap memory size
+  // swap memory size, /proc/[pid]/status/VmSwap
   int64 swap = 10;
-  // todo: vms
-  int64 vms = 11;
 }
 
 // R is running,
@@ -86,16 +98,16 @@ enum ProcessState {
 
 // 进程信息
 message ProcessInfo {
-  // 关联机器id
-  uint64 host_object_id = 1;
   // 进程id, /proc/[pid]
-  uint64 pid = 2;
+  uint64 pid = 1;
   // 进程名字, /proc/[pid]/status/Name
-  string name = 3;
+  string name = 2;
   // 进程路径, /proc/[pid]/exe
-  string path = 4;
+  string path = 3;
   // 启动命令, /proc/[pid]/cmdline
-  string cmdline = 5;
+  string cmdline = 4;
+  // 工作目录, /proc/[pid]/cwd
+  string work_dir = 5;
   // 父进程id, /proc/[pid]/status/PPid
   uint64 ppid = 6;
   // 用户id, /proc/[pid]/status/Uid
@@ -106,9 +118,9 @@ message ProcessInfo {
   int32 gid = 9;
   // 进程状态, /proc/[pid]/status/State
   ProcessState state = 10;
-  // 运行时长(单位为秒), (/proc/[pid]/stat/start_time[22]) / sysconf(_SC_CLK_TCK)
-  uint64 running_time = 11;
-  // todo: 所属容器id
+  // 运行时长(单位为秒), /proc/uptime - (/proc/[pid]/stat/start_time[22]) / sysconf(_SC_CLK_TCK)
+  double running_time = 11;
+  // todo: /proc/[pid]/cgroup
   string container_id = 12;
   // 打开的文件描述符数量, /proc/[pid]/status/FDSize
   uint64 open_fd_count = 13;
@@ -129,24 +141,21 @@ message ProcessInfo {
   uint64 iostat_read_bytes = 20;
   // 写入字节数, /proc/[pid]/io/write_bytes
   uint64 iostat_write_bytes = 21;
-  // todo: 读取字节速率
-  float iostat_read_bytes_rate = 22;
-  // todo: 写入字节速率
-  float iostat_write_bytes_rate = 23;
+  // todo: 读取字节速率, diff(iostat_read_bytes) / sample_period
+  double iostat_read_bytes_rate = 22;
+  // todo: 写入字节速率, diff(iostat_write_bytes) / sample_period
+  double iostat_write_bytes_rate = 23;
 
   // 用户态 cpu 使用时间, (/proc/[pid]/stat/utime[14]) / sysconf(_SC_CLK_TCK)
   uint64 cpu_user_time = 24;
   // 内核态 cpu 使用时间, (/proc/[pid]/stat/stime[15]) / sysconf(_SC_CLK_TCK)
   uint64 cpu_system_time = 25;
   // 用户态cpu 使用率, this.cpu_user_time / (/proc/uptime - this.running_time)
-  float cpu_user_pct = 26;
+  double cpu_user_pct = 26;
   // Kernel CPU 使用率百分比, (this.cpu_system_time) / (/proc/uptime - this.running_time)
-  float cpu_system_pct = 27;
+  double cpu_system_pct = 27;
   // CPU总体使用率: this.cpu_user_pct + this.cpu_system_pct
-  float cpu_total_pct = 28;
-
-  // todo: ???
-  string pstate = 29;
+  double cpu_total_pct = 28;
 }
 
 // 容器
@@ -228,12 +237,16 @@ message NodeUsage {
   // cpu使用率
   uint64 cpu_value = 2;
   // memory使用率
-  uint64 memory_value = 3;
+  VirtualMemoryInfo memroy_usage = 3;
 }
 
 message NodeRes { int32 id = 1; }
 
-message ProcessInfoRequest { repeated ProcessInfo processes = 1; }
+message ProcessInfoRequest {
+  uint64 host_object_id = 1;
+  uint64 series_id = 2;
+  repeated ProcessInfo processes = 3;
+}
 
 service NodeCollectorService {
   // 注册node信息
