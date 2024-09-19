@@ -57,13 +57,15 @@ message VirtualMemoryInfo {
   uint64 free = 2;
   // used virtual memory, /proc/meminfo/SwapCached
   uint64 swap_cached = 3;
+  // total used memory, = total - (free + Buffers(not reportd) + swap_cached)
+  uint64 used = 4;
 }
 
 // 进程内存使用情况
 // read from /proc/[pid]/statm
 message ProcessMemoryUsage {
   // total program size, /proc/[pid]/statm/[1]
-  uint64 size = 1;
+  uint64 vm_size = 1;
   // resident set size(rss), /proc/[pid]/statm/[2]
   uint64 resident = 2;
   // shared, /proc/[pid]/statm/[3]
@@ -76,8 +78,8 @@ message ProcessMemoryUsage {
   uint64 data = 6;
   // dirty pages, /proc/[pid]/statm/[7]
   uint64 dirty = 7;
-  // todo: rsspct
-  float rsspct = 9;
+  // todo: vm_size / total memory size
+  float vm_pct = 9;
   // swap memory size, /proc/[pid]/status/VmSwap
   int64 swap = 10;
 }
