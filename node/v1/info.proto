@@ -250,6 +250,84 @@ message ProcessInfoRequest {
   repeated ProcessInfo processes = 3;
 }
 
+message GPUInfo {
+  // GPU 使用率（百分比）
+  float gpu_utilization = 1;
+
+  // 显存使用情况
+  MemoryUsage memory_usage = 2;
+
+  // 显存带宽（MB/s）
+  float memory_bandwidth = 3;
+
+  // 电源消耗（瓦特）
+  float power_consumption = 4;
+
+  // GPU 核心温度（摄氏度）
+  float temperature = 5;
+
+  // 风扇转速（百分比）
+  float fan_speed = 6;
+
+  // PCIe 带宽（MB/s）
+  float pcie_throughput = 7;
+
+  // 当前运行的进程列表
+  repeated GPUProcess processes = 8;
+
+  // GPU 工作模式 (0: 图形, 1: 计算)
+  GPUMode mode = 9;
+
+  // 核心时钟频率（MHz）
+  ClockSpeed clock_speed = 10;
+
+  // ECC 错误
+  ECCError ecc_errors = 11;
+
+  // 降频原因
+  ThrottleReason throttle_reasons = 12;
+
+  // 显存使用信息
+  message MemoryUsage {
+    uint64 total_memory = 1; // 显存总量 (字节)
+    uint64 used_memory = 2;  // 已使用显存 (字节)
+    uint64 free_memory = 3;  // 空闲显存 (字节)
+  }
+
+  // GPU 进程信息
+  message GPUProcess {
+    uint32 pid = 1;          // 进程 ID
+    string process_name = 2; // 进程名
+    uint64 used_memory = 3;  // 该进程使用的显存 (字节)
+  }
+
+  // GPU 时钟频率
+  message ClockSpeed {
+    uint32 core_clock = 1;   // 核心时钟频率 (MHz)
+    uint32 memory_clock = 2; // 显存时钟频率 (MHz)
+  }
+
+  // ECC 错误信息
+  message ECCError {
+    uint32 corrected_errors = 1;   // 已纠正的错误
+    uint32 uncorrected_errors = 2; // 未纠正的错误
+  }
+
+  // GPU 模式
+  enum GPUMode {
+    GRAPHICS = 0; // 图形模式
+    COMPUTE = 1;  // 计算模式
+  }
+
+  // 降频原因
+  message ThrottleReason {
+    bool power_limit = 1;    // 功率限制
+    bool thermal_limit = 2;  // 温度限制
+    bool software_limit = 3; // 软件限制
+    bool unknown = 4;        // 未知原因
+  }
+}
+
 service NodeCollectorService {
   // 注册node信息
   rpc Register(NodeInfo) returns (NodeRes) {}
