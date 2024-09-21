@@ -158,6 +158,9 @@ message ProcessInfo {
   double cpu_system_pct = 27;
   // CPU总体使用率: this.cpu_user_pct + this.cpu_system_pct
   double cpu_total_pct = 28;
+
+  // 进程启动时间点, time(null) - running_time
+  int64 start_time = 29;
 }
 
 // 容器
@@ -231,6 +234,10 @@ message NodeInfo {
   repeated DiskInfo disk_infos = 12;
   // 虚拟内存信息
   VirtualMemoryInfo virtual_memory_info = 13;
+  // ipv4
+  string ipv4 = 14;
+  // ipv6
+  string ipv6 = 15;
 }
 
 message NodeUsage {
@@ -248,6 +255,7 @@ message ProcessInfoRequest {
   uint64 host_object_id = 1;
   uint64 series_id = 2;
   repeated ProcessInfo processes = 3;
+  string hostname = 4;
 }
 
 service NodeCollectorService {
