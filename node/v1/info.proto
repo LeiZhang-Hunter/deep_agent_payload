@@ -82,6 +82,8 @@ message ProcessMemoryUsage {
   float vm_pct = 9;
   // swap memory size, /proc/[pid]/status/VmSwap
   int64 swap = 10;
+  // resident / total memory size
+  float rss_pct = 11;
 }
 
 // R is running,
@@ -96,6 +98,13 @@ enum ProcessState {
   Uninterruptible = 68; // ASCII 'D'
   Zombie = 90;          // ASCII 'Z'
   Traced = 84;          // ASCII 'T'
+}
+
+message ProcessGPUUsage {
+  int64 memory_used = 1;
+  int64 encoder_usage = 2;
+  int64 decoder_usage = 3;
+  int64 sm_usage = 4;
 }
 
 // 进程信息
@@ -161,6 +170,11 @@ message ProcessInfo {
 
   // 进程启动时间点, time(null) - running_time
   int64 start_time = 29;
+
+  // 是否是内核进程
+  bool is_kernel_thread = 30;
+  // GPU Memory Usage
+  ProcessGPUUsage gpu_usage = 31;
 }
 
 // 容器
@@ -169,20 +183,22 @@ message ContainerInfo {
   string id = 1;
   // 容器名字
   string name = 2;
-  // 容器运行的镜像, 例如: ubuntu:latest
-  string image_tag = 3;
-  // 容器运行的镜像id
-  string image_id = 4;
+  // 容器状态
+  string state = 3;
+  // 容器cpu使用率
+  double cpu_usage = 4;
+  // 容器内存使用率
+  double rss_usage = 5;
   // 容器运行的命令
-  string command = 5;
+  string command = 6;
   // 容器网络接受的字节数
-  uint64 rx_bytes = 6;
+  uint64 rx_bytes = 7;
   // 容器网络发送的字节数
-  uint64 tx_bytes = 7;
+  uint64 tx_bytes = 8;
   // 容器启动时间点
-  uint64 start_time = 8;
-  // 容器磁盘使用情况
-  uint64 space_usage = 9;
+  uint64 start_time = 9;
+  // 运行时间
+  uint64 running_time = 10;
 }
 
 // 磁盘信息, 不能单独借助/proc 完成
@@ -258,6 +274,13 @@ message ProcessInfoRequest {
   string hostname = 4;
 }
 
+message ContainerInfoRequest {
+  uint64 host_object_id = 1;
+  uint64 series_id = 2;
+  string hostname = 3;
+  repeated ContainerInfo containers = 4;
+}
+
 service NodeCollectorService {
   // 注册node信息
   rpc Register(NodeInfo) returns (NodeRes) {}
@@ -265,4 +288,6 @@ service NodeCollectorService {
   rpc Update(NodeUsage) returns (NodeRes) {}
   // 更新进程信息
   rpc ReportProcess(ProcessInfoRequest) returns (NodeRes) {}
+  // 更新容器信息
+  rpc ReportContainer(ContainerInfoRequest) returns (NodeRes) {}
 }
