@@ -101,9 +101,13 @@ enum ProcessState {
 }
 
 message ProcessGPUUsage {
+  // Amount of used GPU memory in bytes
   int64 memory_used = 1;
+  // encoder usage
   int64 encoder_usage = 2;
+  // decoder usage
   int64 decoder_usage = 3;
+  // SM (3D/Compute) utility value
   int64 sm_usage = 4;
 }
 
@@ -185,46 +189,99 @@ message ContainerInfo {
   string name = 2;
   // 容器状态
   string state = 3;
-  // 容器cpu使用率
-  double cpu_usage = 4;
-  // 容器内存使用率
-  double rss_usage = 5;
   // 容器运行的命令
-  string command = 6;
-  // 容器网络接受的字节数
-  uint64 rx_bytes = 7;
-  // 容器网络发送的字节数
-  uint64 tx_bytes = 8;
+  string command = 4;
+  // 容器的镜像名字
+  string image_name = 5;
+  // CPU限制
+  int64 cpu_limit = 6;
+  // CPU 用户态占比
+  double cpu_user_pct = 7;
+  // CPU 内核态占比
+  double cpu_system_pct = 8;
+  // 容器cpu使用率
+  double cpu_total_pct = 9;
+  // 容器内存使用率
+  double rss_usage = 10;
+  // 内存限制
+  int64 memory_limit = 11;
+  // 内存缓存
+  int64 memory_cache = 12;
+  // rss内存
+  int64 memory_rss = 13;
+  // 内存使用率
+  double memory_pct = 14;
+  // 容器读取的字节数
+  uint64 rx_bytes = 15;
+  // 容器读取的速率
+  double rx_bps = 16;
+  // 容器写入的字节数
+  uint64 tx_bytes = 17;
+  // 容器写入的速率
+  double tx_bps = 18;
+  // 容器网络接收速率
+  double net_rcvd_bps = 19;
+  // 容器网络发送速率
+  double net_sent_bps = 20;
   // 容器启动时间点
-  uint64 start_time = 9;
+  uint64 start_time = 21;
   // 运行时间
-  uint64 running_time = 10;
+  uint64 running_time = 22;
+  // 容器的地址
+  repeated string addresses = 23;
+  // 主机IP
+  repeated string host_ips = 24;
+  // pid列表
+  int32 pid = 25;
+  // pod ip
+  string pod_ip = 26;
+  // pod端口
+  repeated int32 pod_ports = 27;
+  string host = 28;
+  // 容器
+  int32 health = 29;
+  // 线程数量
+  int32 thread_count = 30;
+  // 线程限制
+  int32 thread_limit = 31;
+  // todo
+  string kube_app = 32;
+}
+
+enum DiskType {
+  Unkonwn = 0;
+  SSD = 1;
+  HDD = 2;
 }
 
 // 磁盘信息, 不能单独借助/proc 完成
 message DiskInfo {
-  // 磁盘名字
-  string name = 1;
+  // 磁盘设备
+  string device = 1;
   // 磁盘类型
-  string type = 2;
-  // 磁盘大小
-  uint64 size = 3;
-  // 磁盘已使用大小
-  uint64 used = 4;
-  // 磁盘可用大小
-  uint64 free = 5;
-  // 磁盘使用率
-  uint64 usage = 6;
+  DiskType type = 2;
   // 磁盘挂载点
-  string mount = 7;
+  string mount_point = 3;
   // 磁盘文件系统
-  string fs = 8;
-  // 磁盘inode使用率
-  uint64 inode_usage = 9;
+  string filesystem = 4;
+  // 磁盘生产商
+  string vendor = 5;
+  // 磁盘大小
+  uint64 space_total = 6;
+  // 磁盘可用大小
+  uint64 space_free = 7;
+  // 磁盘已使用大小
+  uint64 space_used = 8;
+  // 磁盘使用率
+  double space_usage = 9;
   // 磁盘inode总数
   uint64 inode_total = 10;
-  // 磁盘生产商
-  string vendor = 11;
+  // 磁盘inode总数
+  uint64 inode_free = 11;
+  // 磁盘inode总数
+  uint64 inode_used = 12;
+  // 磁盘inode使用率
+  uint64 inode_usage = 13;
 }
 
 // 机器信息
