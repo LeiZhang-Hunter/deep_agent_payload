@@ -51,7 +51,7 @@ message EnvVariable {
 message VirtualMemoryInfo {
   // total virtual memory, /proc/meminfo/MemTotal
   uint64 total = 1;
-  // free virtual memory, the sum of LowFree+HighFree, /proc/meminfo/MemFree
+  // free virtual memory, /proc/meminfo/MemFree
   uint64 free = 2;
   // used virtual memory, /proc/meminfo/SwapCached
   uint64 swap_cached = 3;
@@ -274,9 +274,9 @@ message DiskInfo {
   double space_usage = 9;
   // 磁盘inode总数
   uint64 inode_total = 10;
-  // 磁盘inode总数
+  // 磁盘inode可用数
   uint64 inode_free = 11;
-  // 磁盘inode总数
+  // 磁盘inode已使用数
   uint64 inode_used = 12;
   // 磁盘inode使用率
   uint64 inode_usage = 13;
@@ -571,8 +571,6 @@ message CGroupController {
   CGroupEvent events = 2;
   // cgroup.freeze
   int32 freeze = 3;
-  // cgroup.kill
-  int32 kill = 4;
   // cgroup.max.depth
   oneof max_depth {
     int32 max_depth_value = 5;
@@ -671,7 +669,8 @@ message ContainerInfoRequest {
   uint64 host_object_id = 1;
   uint64 series_id = 2;
   string hostname = 3;
-  repeated ContainerInfo containers = 4;
+  bool is_k8s = 4;
+  repeated ContainerInfo containers = 5;
 }
 
 service NodeCollectorService {
@@ -683,4 +682,6 @@ service NodeCollectorService {
   rpc ReportProcess(ProcessInfoRequest) returns (NodeRes) {}
   // 更新容器信息
   rpc ReportContainer(ContainerInfoRequest) returns (NodeRes) {}
+  // 更新k8s pod信息
+  rpc ReportK8sContainer(ContainerInfoRequest) returns (NodeRes) {}
 }
