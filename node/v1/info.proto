@@ -669,8 +669,7 @@ message ContainerInfoRequest {
   uint64 host_object_id = 1;
   uint64 series_id = 2;
   string hostname = 3;
-  bool is_k8s = 4;
-  repeated ContainerInfo containers = 5;
+  repeated ContainerInfo containers = 4;
 }
 
 service NodeCollectorService {
@@ -682,6 +681,4 @@ service NodeCollectorService {
   rpc ReportProcess(ProcessInfoRequest) returns (NodeRes) {}
   // 更新容器信息
   rpc ReportContainer(ContainerInfoRequest) returns (NodeRes) {}
-  // 更新k8s pod信息
-  rpc ReportK8sContainer(ContainerInfoRequest) returns (NodeRes) {}
 }
